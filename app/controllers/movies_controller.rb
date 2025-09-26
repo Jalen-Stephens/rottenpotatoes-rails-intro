@@ -11,7 +11,10 @@ class MoviesController < ApplicationController
 
     if params[:ratings]
       session[:ratings] = params[:ratings]
+    elsif params[:commit]
+      session[:ratings] = Hash[@all_ratings.map { |r| [r,1] }]
     end
+    
     if params[:sort]
       session[:sort] = params[:sort]
     end
@@ -20,8 +23,8 @@ class MoviesController < ApplicationController
       redirect_to movies_path(sort: session[:sort], ratings: session[:ratings]) and return
     end
     
-    @ratings_to_show = params[:ratings]&.keys || @all_ratings
-    @sort = params[:sort]
+    @ratings_to_show = (params[:ratings]&.keys || session[:ratings]&.keys || @all_ratings)
+    @sort = params[:sort] || session[:sort]
 
     @movies = Movie.with_ratings(@ratings_to_show)
     @movies = @movies.order(@sort) if @sort
