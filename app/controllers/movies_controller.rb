@@ -8,6 +8,18 @@ class MoviesController < ApplicationController
 
   def index
     @all_ratings = ["G", "PG", "PG-13", "R"]
+
+    if params[:ratings]
+      session[:ratings] = params[:ratings]
+    end
+    if params[:sort]
+      session[:sort] = params[:sort]
+    end
+
+    if params[:ratings].nil? && session[:ratings]
+      redirect_to movies_path(sort: session[:sort], ratings: session[:ratings]) and return
+    end
+    
     @ratings_to_show = params[:ratings]&.keys || @all_ratings
     @sort = params[:sort]
 
